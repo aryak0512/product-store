@@ -1,0 +1,44 @@
+package com.aryak.productstore.service.impl;
+
+import com.aryak.productstore.model.Product;
+import com.aryak.productstore.model.ProductDto;
+import com.aryak.productstore.repository.ProductRepository;
+import com.aryak.productstore.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ProductServiceImpl implements ProductService {
+
+    private static final Logger log = LoggerFactory.getLogger(ProductServiceImpl.class);
+
+    private final ProductRepository productRepository;
+
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
+    @Override
+    public List<Product> getProducts() {
+        log.info("Entering getProducts()");
+        return productRepository.findAll();
+        //.stream()
+//                .map(product -> {
+//                    log.info("Mapping Product to ProductDto: {}", product);
+//                    return toProductDto(product);
+//                })
+        //               .toList();
+
+    }
+
+    private ProductDto toProductDto(Product product) {
+        ProductDto productDto = new ProductDto();
+        BeanUtils.copyProperties(product, productDto);
+        log.info("Converted Product to ProductDto: {}", productDto);
+        return productDto;
+    }
+}
