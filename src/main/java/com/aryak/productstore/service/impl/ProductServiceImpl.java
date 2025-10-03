@@ -23,22 +23,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getProducts() {
+    public List<ProductDto> getProducts() {
         log.info("Entering getProducts()");
-        return productRepository.findAll();
-        //.stream()
-//                .map(product -> {
-//                    log.info("Mapping Product to ProductDto: {}", product);
-//                    return toProductDto(product);
-//                })
-        //               .toList();
+        return productRepository.findAll()
+                .stream()
+                .map(this::toProductDto)
+                .toList();
 
     }
 
     private ProductDto toProductDto(Product product) {
         ProductDto productDto = new ProductDto();
         BeanUtils.copyProperties(product, productDto);
-        log.info("Converted Product to ProductDto: {}", productDto);
         return productDto;
     }
 }
