@@ -95,6 +95,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <mainClass>com.aryak.productstore.ProductStoreApplication</mainClass>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -119,7 +120,7 @@
                 </executions>
 
                 <configuration>
-                    <configLocation>checkstyle.xml</configLocation>
+                    <configLocation>checkstyle/checkstyle.xml</configLocation>
                     <failOnViolation>true</failOnViolation>
                     <consoleOutput>true</consoleOutput>
                     <encoding>UTF-8</encoding>

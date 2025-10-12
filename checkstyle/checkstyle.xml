@@ -7,7 +7,7 @@
 
     <!-- Exclude all .properties files -->
     <module name="SuppressionFilter">
-        <property name="file" value="checkstyle-suppressions.xml"/>
+        <property name="file" value="checkstyle/checkstyle-suppressions.xml"/>
     </module>
 
     <!-- LineLength must be under Checker -->
