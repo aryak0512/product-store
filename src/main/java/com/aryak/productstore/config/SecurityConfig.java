@@ -1,10 +1,19 @@
 package com.aryak.productstore.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -15,22 +24,28 @@ import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig {
 
+    private final List<String> publicPaths;
+
     @Value("${frontend.app.baseUrl}")
     private String baseUrl;
+
+    @Value("${bcrypt.encoded.password}")
+    private String bcryptEncodedPassword;
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(corsConfig -> corsConfig.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable) // not recommended for production
-                .authorizeHttpRequests(requests ->
-                        requests
-                                .requestMatchers("/api/v1/products/**").permitAll()
-                                .requestMatchers("/api/v1/contacts/**").authenticated()
-
+                .authorizeHttpRequests((requests) -> {
+                            publicPaths.forEach(path ->
+                                    requests.requestMatchers(path).permitAll());
+                            requests.anyRequest().authenticated();
+                        }
                 )
                 .formLogin(withDefaults())
                 .httpBasic(withDefaults())
@@ -48,6 +63,35 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    /**
+     * https://bcrypt-generator.com/
+     *
+     * @return
+     */
+    @Bean
+    public UserDetailsService userDetailsService() {
+        var user1 = User.builder().username("aryak")
+                .password(bcryptEncodedPassword).roles("USER").build();
+        var user2 = User.builder().username("admin")
+                .password(bcryptEncodedPassword).roles("USER", "ADMIN").build();
+        return new InMemoryUserDetailsManager(user1, user2);
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(
+            UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+        var daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsService);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
+        var providerManager = new ProviderManager(daoAuthenticationProvider);
+        return providerManager;
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 
 }
