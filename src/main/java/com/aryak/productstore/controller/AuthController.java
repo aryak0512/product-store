@@ -28,11 +28,11 @@ public class AuthController {
     public ResponseEntity<LoginResponseDto> apiLogin(@RequestBody
                                                      LoginRequestDto loginRequestDto) {
         try {
-            Authentication authentication = authenticationManager.authenticate(new
+            final Authentication authentication = authenticationManager.authenticate(new
                     UsernamePasswordAuthenticationToken(loginRequestDto.username(),
                     loginRequestDto.password()));
-            var userDto = new UserDto();
-            var loggedInUser = (User) authentication.getPrincipal();
+            final var userDto = new UserDto();
+            final var loggedInUser = (User) authentication.getPrincipal();
             userDto.setUsername(loggedInUser.getUsername());
             //String jwtToken = jwtUtil.generateJwtToken(authentication);
             return ResponseEntity.status(HttpStatus.OK)

@@ -54,13 +54,13 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
+        final CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(baseUrl));
         config.setAllowedMethods(Collections.singletonList("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
@@ -72,9 +72,9 @@ public class SecurityConfig {
      */
     @Bean
     public UserDetailsService userDetailsService() {
-        var user1 = User.builder().username("aryak")
+        final var user1 = User.builder().username("aryak")
                 .password(bcryptEncodedPassword).roles("USER").build();
-        var user2 = User.builder().username("admin")
+        final var user2 = User.builder().username("admin")
                 .password(bcryptEncodedPassword).roles("USER", "ADMIN").build();
         return new InMemoryUserDetailsManager(user1, user2);
     }
@@ -82,10 +82,10 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(
             UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
-        var daoAuthenticationProvider = new DaoAuthenticationProvider();
+        final var daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService);
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder);
-        var providerManager = new ProviderManager(daoAuthenticationProvider);
+        final var providerManager = new ProviderManager(daoAuthenticationProvider);
         return providerManager;
     }
 

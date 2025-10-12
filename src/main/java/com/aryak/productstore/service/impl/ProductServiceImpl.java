@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private ProductDto toProductDto(Product product) {
-        ProductDto productDto = new ProductDto();
+        final ProductDto productDto = new ProductDto();
         BeanUtils.copyProperties(product, productDto);
         return productDto;
     }
